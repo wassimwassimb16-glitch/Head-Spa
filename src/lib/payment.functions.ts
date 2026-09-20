@@ -20,9 +20,7 @@ function publicOrigin() {
 }
 type SupabaseAdminAuth = {
   auth: {
-    getUser: (
-      token: string,
-    ) => Promise<{
+    getUser: (token: string) => Promise<{
       data: { user: { email?: string } | null };
       error: { message?: string } | null;
     }>;
