@@ -37,7 +37,7 @@ const digits = (v: string) => v.replace(/\D/g, "").length;
 
 function Page() {
   const { t } = useI18n();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const [kind, setKind] = useState<"procedure" | "amount">("procedure");
   const [serviceId, setServiceId] = useState("harmony");
   const [value, setValue] = useState(1500);
@@ -87,7 +87,7 @@ function Page() {
         amount_czk: total,
         customer_name: name,
         phone,
-        email,
+        email: user?.email ?? email,
         delivery_type: String(data.get("delivery") || "email"),
         status: "pending_payment",
         payment_session_id: null,
