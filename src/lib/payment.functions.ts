@@ -18,7 +18,16 @@ function publicOrigin() {
   const request = getRequest();
   return process.env.APP_URL || (request ? new URL(request.url).origin : "");
 }
-type SupabaseAdminAuth = { auth: { getUser: (token: string) => Promise<{ data: { user: { email?: string } | null }; error: { message?: string } | null }> } };
+type SupabaseAdminAuth = {
+  auth: {
+    getUser: (
+      token: string,
+    ) => Promise<{
+      data: { user: { email?: string } | null };
+      error: { message?: string } | null;
+    }>;
+  };
+};
 async function requireCurrentUser(supabaseAdmin: SupabaseAdminAuth) {
   const token = getRequest()
     ?.headers.get("authorization")
