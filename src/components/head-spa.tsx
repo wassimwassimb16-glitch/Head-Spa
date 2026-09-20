@@ -3,7 +3,8 @@ import { ArrowRight, Check, Globe, Menu, X } from "lucide-react";
 import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { addReservation, useAuth } from "@/lib/auth-context";
+import { createReservation, useAuth } from "@/lib/auth-context";
+import { createCheckoutSession } from "@/lib/payment.functions";
 import { BRAND, CONTACT_PLACEHOLDERS, useI18n, type Lang } from "@/lib/i18n";
 import logoSvg from "@/assets/logo.svg";
 import harmonyImage from "@/assets/service-harmony.jpg";
@@ -465,7 +466,7 @@ export function ReservationModal({
   initialService?: string;
 }) {
   const { t, lang } = useI18n();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const [step, setStep] = useState(initialService ? 2 : 1);
   const [serviceId, setServiceId] = useState(initialService);
   const [sent, setSent] = useState(false);
@@ -514,23 +515,23 @@ export function ReservationModal({
     setError("");
     const gift = data.get("gift") === "yes";
     try {
-      addReservation({
+      const reservation = await createReservation({
         service_id: selected.id,
         customer_name: name,
         phone,
-        email,
+        email: user?.email ?? email,
         preferred_time: time,
         gift_voucher: gift,
-        gift_voucher_number: gift
-          ? String(data.get("voucher") || "").trim() || null
-          : null,
+        gift_voucher_number: gift ? String(data.get("voucher") || "").trim() || null : null,
         therapist: String(data.get("therapist") || "bez preference"),
         amount_czk: selected.amount,
         status: "pending_payment",
         payment_session_id: null,
       });
+      const checkout = await createCheckoutSession({ data: { orderId: reservation.id, orderType: "reservation" } });
       setSaving(false);
-      setSent(true);
+      if (!checkout.url) throw new Error("Stripe checkout URL is missing.");
+      window.location.assign(checkout.url);
     } catch (err) {
       console.error(err);
       setSaving(false);
