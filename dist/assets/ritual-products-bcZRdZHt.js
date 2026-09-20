@@ -1,1 +1,0 @@
-var e=`/assets/ritual-products-BaTs4pjb.jpg`;export{e as t};
