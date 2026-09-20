@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1536 1024" preserveAspectRatio="xMidYMid slice" role="img" aria-hidden="true">
+  <defs>
+    <linearGradient id="heroSky" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1b2a22"/>
+      <stop offset="45%" stop-color="#3b4f3c"/>
+      <stop offset="100%" stop-color="#c9b08a"/>
+    </linearGradient>
+    <radialGradient id="heroGlow" cx="72%" cy="38%" r="48%">
+      <stop offset="0%" stop-color="#f3e6cc" stop-opacity=".55"/>
+      <stop offset="100%" stop-color="#f3e6cc" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1536" height="1024" fill="url(#heroSky)"/>
+  <rect width="1536" height="1024" fill="url(#heroGlow)"/>
+  <ellipse cx="1180" cy="220" rx="280" ry="180" fill="#ead9b8" opacity=".18"/>
+  <path d="M0 760 C 280 620 520 820 780 700 C 1040 580 1280 740 1536 640 L1536 1024 L0 1024 Z" fill="#14201a" opacity=".55"/>
+  <path d="M0 860 C 340 740 640 900 960 790 C 1200 710 1380 820 1536 760 L1536 1024 L0 1024 Z" fill="#0f1814" opacity=".5"/>
+</svg>

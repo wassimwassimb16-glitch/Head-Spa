@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1408" preserveAspectRatio="xMidYMid slice" role="img" aria-hidden="true">
+  <defs>
+    <linearGradient id="touchBg" x1="1" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#cbb48a"/>
+      <stop offset="55%" stop-color="#5d6b52"/>
+      <stop offset="100%" stop-color="#1d2a23"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="1408" fill="url(#touchBg)"/>
+  <circle cx="860" cy="420" r="220" fill="#efe1c5" opacity=".2"/>
+  <path d="M-40 700 C 220 560 380 820 640 680 C 900 540 1080 760 1240 640 L1240 1440 L-40 1440 Z" fill="#121c18" opacity=".4"/>
+</svg>

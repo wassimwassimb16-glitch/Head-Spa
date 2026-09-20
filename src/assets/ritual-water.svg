@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1408" preserveAspectRatio="xMidYMid slice" role="img" aria-hidden="true">
+  <defs>
+    <linearGradient id="waterBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#234038"/>
+      <stop offset="100%" stop-color="#0e1a16"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="1408" fill="url(#waterBg)"/>
+  <ellipse cx="600" cy="520" rx="340" ry="90" fill="#d7c4a0" opacity=".16"/>
+  <ellipse cx="600" cy="560" rx="280" ry="70" fill="#9bb8ad" opacity=".18"/>
+  <ellipse cx="600" cy="600" rx="210" ry="48" fill="#e8d7b5" opacity=".22"/>
+  <path d="M180 980 C 360 860 500 1100 690 940 C 860 800 1020 1040 1200 900 L1200 1408 L0 1408 Z" fill="#08110e" opacity=".45"/>
+</svg>

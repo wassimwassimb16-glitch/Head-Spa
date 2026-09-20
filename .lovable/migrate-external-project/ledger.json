@@ -1,0 +1,20 @@
+{
+  "source": "https://www.headspahk.cz/",
+  "capabilities": [
+    {"capability":"public website and responsive design","source":"published site","outcome":"recreate","status":"verified","next_action":"none"},
+    {"capability":"public imagery and branding","source":"published site assets","outcome":"preserve","status":"verified","next_action":"none"},
+    {"capability":"service catalogue and filtering","source":"homepage","outcome":"recreate","status":"verified","next_action":"none"},
+    {"capability":"reservation form","source":"homepage modal","outcome":"recreate","status":"implemented","next_action":"connect original recipient/backend to enable live delivery"},
+    {"capability":"gift voucher ordering","source":"/darkovy-poukaz","outcome":"recreate","status":"implemented","next_action":"connect original payment and email delivery backend"},
+    {"capability":"informational and legal pages","source":"published routes","outcome":"recreate","status":"verified","next_action":"none"},
+    {"capability":"social and map links","source":"footer","outcome":"preserve","status":"verified","next_action":"none"},
+    {"capability":"analytics","source":"Umami script","outcome":"defer","status":"blocked","next_action":"requires owner analytics configuration"},
+    {"capability":"database records","source":"none detected","outcome":"not_applicable","status":"verified","next_action":"none"},
+    {"capability":"authentication","source":"none detected","outcome":"not_applicable","status":"verified","next_action":"none"},
+    {"capability":"uploaded file bytes","source":"public site assets","outcome":"preserve","status":"verified","next_action":"none"},
+    {"capability":"public endpoints and external callbacks","source":"reservation and voucher POST handlers","outcome":"defer","status":"blocked","next_action":"requires recipient/backend behavior not exposed by published site"},
+    {"capability":"secrets","source":"none supplied","outcome":"not_applicable","status":"verified","next_action":"none"},
+    {"capability":"cutover","source":"published source domain","outcome":"defer","status":"pending","next_action":"publish and connect domain when requested"},
+    {"capability":"verification","source":"local preview","outcome":"verify","status":"verified","next_action":"none"}
+  ]
+}
