@@ -272,13 +272,6 @@ export function Header({ onReserve }: { onReserve: () => void }) {
             {t.nav.login}
           </Link>
           <Button
-            onClick={onReserve}
-            size="lg"
-            className="hidden rounded-full lg:inline-flex"
-          >
-            {t.common.reserveSlot} <ArrowRight />
-          </Button>
-          <Button
             variant="ghost"
             size="icon"
             className="lg:hidden"
