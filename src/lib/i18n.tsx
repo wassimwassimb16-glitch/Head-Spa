@@ -225,7 +225,8 @@ const cs = {
     no: "Ne",
     consent:
       "Souhlasím s obchodními podmínkami a se zpracováním osobních údajů.",
-    paymentRequired: "Platba kartou je nutná pro potvrzení rezervace a zajištění termínu.",
+    paymentRequired:
+      "Platba kartou je nutná pro potvrzení rezervace a zajištění termínu.",
     payNow: "Pokračovat k platbě",
     errors: {
       name: "Zadejte prosím celé jméno (alespoň 2 znaky).",
@@ -514,7 +515,8 @@ const en: Dict = {
     no: "No",
     consent:
       "I agree to the terms and conditions and to the processing of my personal data.",
-    paymentRequired: "Payment is required to confirm the booking and secure your time slot.",
+    paymentRequired:
+      "Payment is required to confirm the booking and secure your time slot.",
     payNow: "Pay now",
     errors: {
       name: "Please enter your full name (at least 2 characters).",
