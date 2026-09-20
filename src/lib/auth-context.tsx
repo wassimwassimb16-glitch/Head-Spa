@@ -27,7 +27,8 @@ export type ReservationRecord = {
   status: string;
   payment_session_id: string | null;
   created_at: string;
-  therapist?: string;
+  updated_at?: string;
+  therapist?: string | null;
   gift_voucher?: boolean;
   gift_voucher_number?: string | null;
 };
@@ -44,7 +45,18 @@ export type VoucherRecord = {
   status: string;
   payment_session_id: string | null;
   created_at: string;
+  updated_at?: string;
 };
+
+export type ReservationInput = Omit<
+  ReservationRecord,
+  "id" | "created_at" | "updated_at"
+>;
+
+export type VoucherInput = Omit<
+  VoucherRecord,
+  "id" | "created_at" | "updated_at"
+>;
 
 type LocalAuthUser = {
   id: string;
@@ -183,11 +195,29 @@ export function readVoucherOrders(): VoucherRecord[] {
   return readStorageList(VOUCHERS_STORAGE_KEY, fallback);
 }
 
-export function addVoucherOrder(input: Omit<VoucherRecord, "id" | "created_at">): VoucherRecord {
+export function createReservation(
+  input: ReservationInput,
+): ReservationRecord {
+  const next: ReservationRecord = {
+    ...input,
+    id: `reservation-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  };
+
+  const items = readReservations();
+  writeStorageList(RESERVATIONS_STORAGE_KEY, [...items, next]);
+  return next;
+}
+
+export function addVoucherOrder(
+  input: Omit<VoucherRecord, "id" | "created_at">,
+): VoucherRecord {
   const next: VoucherRecord = {
     ...input,
     id: `voucher-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
     status: input.status ?? "pending_payment",
     payment_session_id: input.payment_session_id ?? null,
   };
@@ -195,6 +225,16 @@ export function addVoucherOrder(input: Omit<VoucherRecord, "id" | "created_at">)
   const items = readVoucherOrders();
   writeStorageList(VOUCHERS_STORAGE_KEY, [...items, next]);
   return next;
+}
+
+export function createVoucherOrder(
+  input: VoucherInput,
+): VoucherRecord {
+  return addVoucherOrder({
+    ...input,
+    status: input.status ?? "pending_payment",
+    payment_session_id: input.payment_session_id ?? null,
+  });
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
