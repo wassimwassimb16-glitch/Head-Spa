@@ -77,7 +77,7 @@ function LoginPage() {
           return;
         }
         setSuccess("Přihlášení proběhlo úspěšně.");
-        navigate({ to: isAdmin ? "/admin" : "/account", replace: true });
+        // AuthProvider redirects after the Supabase session and admin role are loaded.
       } else {
         const result = await signUp({
           firstName: form.firstName,
@@ -90,8 +90,12 @@ function LoginPage() {
           setError(result.error);
           return;
         }
+        if (!result.session) {
+          setMode("login");
+          setSuccess("Account created. Check your email to confirm it, then sign in.");
+          return;
+        }
         setSuccess("Registrace proběhla úspěšně. Nyní jste přihlášeni.");
-        navigate({ to: "/account", replace: true });
       }
     } catch {
       setError("Při přihlášení se něco nepodařilo. Zkuste to prosím znovu.");
