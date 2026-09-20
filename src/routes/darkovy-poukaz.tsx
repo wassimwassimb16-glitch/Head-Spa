@@ -4,7 +4,10 @@ import { Check, Gift } from "lucide-react";
 import { CompactHero, Field, PageShell, services } from "@/components/head-spa";
 import { Button } from "@/components/ui/button";
 import { createVoucherOrder, useAuth } from "@/lib/auth-context";
-import { confirmCheckoutSession, createCheckoutSession } from "@/lib/payment.functions";
+import {
+  confirmCheckoutSession,
+  createCheckoutSession,
+} from "@/lib/payment.functions";
 import { useI18n } from "@/lib/i18n";
 import products from "@/assets/ritual-products.jpg";
 
@@ -49,7 +52,12 @@ function Page() {
     const params = new URLSearchParams(window.location.search);
     const sessionId = params.get("session_id");
     if (params.get("payment") !== "success" || !sessionId) return;
-    void confirmCheckoutSession({ data: { sessionId } }).then((result) => setSent(result.paid)).catch((verificationError) => { console.error(verificationError); setError(t.voucher.error); });
+    void confirmCheckoutSession({ data: { sessionId } })
+      .then((result) => setSent(result.paid))
+      .catch((verificationError) => {
+        console.error(verificationError);
+        setError(t.voucher.error);
+      });
     window.history.replaceState({}, "", window.location.pathname);
   }, [t.voucher.error]);
 
@@ -92,7 +100,9 @@ function Page() {
         status: "pending_payment",
         payment_session_id: null,
       });
-      const checkout = await createCheckoutSession({ data: { orderId: order.id, orderType: "voucher" } });
+      const checkout = await createCheckoutSession({
+        data: { orderId: order.id, orderType: "voucher" },
+      });
       setSaving(false);
       if (!checkout.url) throw new Error("Stripe checkout URL is missing.");
       window.location.assign(checkout.url);
@@ -112,13 +122,22 @@ function Page() {
             <span className="eyebrow">{t.voucher.eyebrow}</span>
             <h1 className="section-heading mt-3">Account required</h1>
             <p className="mt-4 mx-auto max-w-xl leading-8 text-muted-foreground">
-              Please register or log in before ordering a gift voucher. Voucher orders are only available for signed-in customers.
+              Please register or log in before ordering a gift voucher. Voucher
+              orders are only available for signed-in customers.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
-              <Button type="button" variant="outline" className="rounded-full" onClick={() => window.history.back()}>
+              <Button
+                type="button"
+                variant="outline"
+                className="rounded-full"
+                onClick={() => window.history.back()}
+              >
                 Back
               </Button>
-              <a href="/login" className="inline-flex h-10 items-center justify-center rounded-full bg-primary px-8 text-sm font-medium text-primary-foreground shadow">
+              <a
+                href="/login"
+                className="inline-flex h-10 items-center justify-center rounded-full bg-primary px-8 text-sm font-medium text-primary-foreground shadow"
+              >
                 Sign in / Register
               </a>
             </div>
