@@ -102,14 +102,13 @@ function AdminPage() {
       return;
     }
 
-    const load = () => {
-      const items = readReservations().sort(
-        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
-      );
-      setRows(items as ReservationRow[]);
+    const load = async () => {
+      try {
+        const items = (await readReservations()).sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        setRows(items as ReservationRow[]);
+      } catch (error) { console.error(error); setRows([]); }
     };
-
-    load();
+    void load();
   }, [isAdmin, isAuthenticated, loading, navigate]);
 
   const filteredRows = useMemo(() => {
