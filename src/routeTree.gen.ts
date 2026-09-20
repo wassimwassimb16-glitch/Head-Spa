@@ -10,7 +10,10 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AccountRouteImport } from './routes/account'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as DarkovyPoukazRouteImport } from './routes/darkovy-poukaz'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as OchranaOsobnichUdajuGdprRouteImport } from './routes/ochrana-osobnich-udaju-gdpr'
 import { Route as PredNavstevouRouteImport } from './routes/pred-navstevou'
 import { Route as VseobecneObchodniPodminkyRouteImport } from './routes/vseobecne-obchodni-podminky'
@@ -20,9 +23,24 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AccountRoute = AccountRouteImport.update({
+  id: '/account',
+  path: '/account',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DarkovyPoukazRoute = DarkovyPoukazRouteImport.update({
   id: '/darkovy-poukaz',
   path: '/darkovy-poukaz',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OchranaOsobnichUdajuGdprRoute =
@@ -45,14 +63,20 @@ const VseobecneObchodniPodminkyRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
+  '/admin': typeof AdminRoute
   '/darkovy-poukaz': typeof DarkovyPoukazRoute
+  '/login': typeof LoginRoute
   '/ochrana-osobnich-udaju-gdpr': typeof OchranaOsobnichUdajuGdprRoute
   '/pred-navstevou': typeof PredNavstevouRoute
   '/vseobecne-obchodni-podminky': typeof VseobecneObchodniPodminkyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
+  '/admin': typeof AdminRoute
   '/darkovy-poukaz': typeof DarkovyPoukazRoute
+  '/login': typeof LoginRoute
   '/ochrana-osobnich-udaju-gdpr': typeof OchranaOsobnichUdajuGdprRoute
   '/pred-navstevou': typeof PredNavstevouRoute
   '/vseobecne-obchodni-podminky': typeof VseobecneObchodniPodminkyRoute
@@ -60,7 +84,10 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
+  '/admin': typeof AdminRoute
   '/darkovy-poukaz': typeof DarkovyPoukazRoute
+  '/login': typeof LoginRoute
   '/ochrana-osobnich-udaju-gdpr': typeof OchranaOsobnichUdajuGdprRoute
   '/pred-navstevou': typeof PredNavstevouRoute
   '/vseobecne-obchodni-podminky': typeof VseobecneObchodniPodminkyRoute
@@ -69,21 +96,30 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/account'
+    | '/admin'
     | '/darkovy-poukaz'
+    | '/login'
     | '/ochrana-osobnich-udaju-gdpr'
     | '/pred-navstevou'
     | '/vseobecne-obchodni-podminky'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/account'
+    | '/admin'
     | '/darkovy-poukaz'
+    | '/login'
     | '/ochrana-osobnich-udaju-gdpr'
     | '/pred-navstevou'
     | '/vseobecne-obchodni-podminky'
   id:
     | '__root__'
     | '/'
+    | '/account'
+    | '/admin'
     | '/darkovy-poukaz'
+    | '/login'
     | '/ochrana-osobnich-udaju-gdpr'
     | '/pred-navstevou'
     | '/vseobecne-obchodni-podminky'
@@ -91,7 +127,10 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AccountRoute: typeof AccountRoute
+  AdminRoute: typeof AdminRoute
   DarkovyPoukazRoute: typeof DarkovyPoukazRoute
+  LoginRoute: typeof LoginRoute
   OchranaOsobnichUdajuGdprRoute: typeof OchranaOsobnichUdajuGdprRoute
   PredNavstevouRoute: typeof PredNavstevouRoute
   VseobecneObchodniPodminkyRoute: typeof VseobecneObchodniPodminkyRoute
@@ -106,11 +145,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/account': {
+      id: '/account'
+      path: '/account'
+      fullPath: '/account'
+      preLoaderRoute: typeof AccountRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/darkovy-poukaz': {
       id: '/darkovy-poukaz'
       path: '/darkovy-poukaz'
       fullPath: '/darkovy-poukaz'
       preLoaderRoute: typeof DarkovyPoukazRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ochrana-osobnich-udaju-gdpr': {
@@ -139,7 +199,10 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AccountRoute: AccountRoute,
+  AdminRoute: AdminRoute,
   DarkovyPoukazRoute: DarkovyPoukazRoute,
+  LoginRoute: LoginRoute,
   OchranaOsobnichUdajuGdprRoute: OchranaOsobnichUdajuGdprRoute,
   PredNavstevouRoute: PredNavstevouRoute,
   VseobecneObchodniPodminkyRoute: VseobecneObchodniPodminkyRoute,
