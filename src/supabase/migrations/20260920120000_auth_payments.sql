@@ -1,0 +1,15 @@
+create table if not exists public.admin_users (id uuid primary key references auth.users(id) on delete cascade, email text not null unique, created_at timestamptz not null default now());
+alter table public.admin_users enable row level security;
+create or replace function public.is_admin() returns boolean language sql stable security definer set search_path = public as $$ select exists (select 1 from public.admin_users where id = auth.uid() or lower(email) = lower(coalesce(auth.jwt() ->> 'email', ''))); $$;
+drop policy if exists "Visitors can create reservation requests" on public.reservation_requests;
+create policy "Visitors can create reservation requests" on public.reservation_requests for insert to anon, authenticated with check (status = 'pending_payment' and payment_session_id is null);
+create policy "Customers and admins can read reservations" on public.reservation_requests for select to authenticated using (public.is_admin() or lower(email) = lower(coalesce(auth.jwt() ->> 'email', '')));
+create policy "Admins can update reservations" on public.reservation_requests for update to authenticated using (public.is_admin()) with check (public.is_admin());
+create policy "Admins can delete reservations" on public.reservation_requests for delete to authenticated using (public.is_admin());
+drop policy if exists "Visitors can create voucher orders" on public.voucher_orders;
+create policy "Visitors can create voucher orders" on public.voucher_orders for insert to anon, authenticated with check (status = 'pending_payment' and payment_session_id is null);
+create policy "Customers and admins can read vouchers" on public.voucher_orders for select to authenticated using (public.is_admin() or lower(email) = lower(coalesce(auth.jwt() ->> 'email', '')));
+create policy "Admins can update vouchers" on public.voucher_orders for update to authenticated using (public.is_admin()) with check (public.is_admin());
+create policy "Admins can delete vouchers" on public.voucher_orders for delete to authenticated using (public.is_admin());
+create policy "Admins can read their own admin record" on public.admin_users for select to authenticated using (id = auth.uid() or public.is_admin());
+grant select on public.admin_users to authenticated;
