@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { Check, Gift } from "lucide-react";
 import { CompactHero, Field, PageShell, services } from "@/components/head-spa";
 import { Button } from "@/components/ui/button";
-import { addVoucherOrder, useAuth } from "@/lib/auth-context";
+import { createVoucherOrder, useAuth } from "@/lib/auth-context";
+import { confirmCheckoutSession, createCheckoutSession } from "@/lib/payment.functions";
 import { useI18n } from "@/lib/i18n";
 import products from "@/assets/ritual-products.jpg";
 
@@ -44,6 +45,14 @@ function Page() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [fieldErrors, setFieldErrors] = useState<Errs>({});
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const sessionId = params.get("session_id");
+    if (params.get("payment") !== "success" || !sessionId) return;
+    void confirmCheckoutSession({ data: { sessionId } }).then((result) => setSent(result.paid)).catch((verificationError) => { console.error(verificationError); setError(t.voucher.error); });
+    window.history.replaceState({}, "", window.location.pathname);
+  }, [t.voucher.error]);
+
   const selected = useMemo(
     () => services.find((s) => s.id === serviceId),
     [serviceId],
@@ -72,7 +81,7 @@ function Page() {
     setSaving(true);
     setError("");
     try {
-      addVoucherOrder({
+      const order = await createVoucherOrder({
         voucher_kind: kind,
         service_id: kind === "procedure" ? serviceId : null,
         amount_czk: total,
@@ -83,8 +92,10 @@ function Page() {
         status: "pending_payment",
         payment_session_id: null,
       });
+      const checkout = await createCheckoutSession({ data: { orderId: order.id, orderType: "voucher" } });
       setSaving(false);
-      setSent(true);
+      if (!checkout.url) throw new Error("Stripe checkout URL is missing.");
+      window.location.assign(checkout.url);
     } catch (err) {
       console.error(err);
       setSaving(false);
