@@ -92,7 +92,9 @@ function LoginPage() {
         }
         if (!result.session) {
           setMode("login");
-          setSuccess("Account created. Check your email to confirm it, then sign in.");
+          setSuccess(
+            "Account created. Check your email to confirm it, then sign in.",
+          );
           return;
         }
         setSuccess("Registrace proběhla úspěšně. Nyní jste přihlášeni.");
@@ -264,7 +266,9 @@ function LoginPage() {
                 <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
                   {t.auth.secureAccess}
                 </p>
-                <h2 className="font-serif text-3xl">{t.auth.customerAccount}</h2>
+                <h2 className="font-serif text-3xl">
+                  {t.auth.customerAccount}
+                </h2>
               </div>
             </div>
 
@@ -274,7 +278,9 @@ function LoginPage() {
                 <p>{t.auth.secureText}</p>
               </div>
               <div className="rounded-lg border border-border bg-background p-4">
-                <p className="font-semibold text-foreground">{t.auth.adminAccess}</p>
+                <p className="font-semibold text-foreground">
+                  {t.auth.adminAccess}
+                </p>
                 <p className="mt-2">{t.auth.adminText}</p>
               </div>
             </div>
