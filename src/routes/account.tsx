@@ -9,8 +9,7 @@ import {
 } from "lucide-react";
 import { CompactHero, PageShell } from "@/components/head-spa";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/lib/auth-context";
-import { supabase } from "@/integrations/supabase/client";
+import { readReservations, useAuth } from "@/lib/auth-context";
 
 export const Route = createFileRoute("/account")({
   head: () => ({
@@ -44,21 +43,18 @@ function AccountPage() {
 
     if (!user?.email) return;
 
-    const load = async () => {
-      const { data, error } = await supabase
-        .from("reservation_requests")
-        .select("*")
-        .eq("email", user.email)
-        .order("created_at", { ascending: false });
-
-      if (error) {
+    const load = () => {
+      try {
+        const items = readReservations()
+          .filter((entry) => entry.email.toLowerCase() === user.email.toLowerCase())
+          .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        setReservations(items as ReservationRow[]);
+      } catch {
         setFetchError("Nepodařilo se načíst vaše rezervace.");
-        return;
       }
-      setReservations((data ?? []) as ReservationRow[]);
     };
 
-    void load();
+    load();
   }, [isAuthenticated, loading, navigate, user]);
 
   const upcoming = useMemo(

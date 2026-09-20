@@ -3,9 +3,9 @@ import { useMemo, useState, type FormEvent } from "react";
 import { Check, Gift } from "lucide-react";
 import { CompactHero, Field, PageShell, services } from "@/components/head-spa";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
+import { addVoucherOrder, useAuth } from "@/lib/auth-context";
 import { useI18n } from "@/lib/i18n";
-import products from "@/assets/ritual-products.svg";
+import products from "@/assets/ritual-products.jpg";
 
 export const Route = createFileRoute("/darkovy-poukaz")({
   head: () => ({
@@ -36,6 +36,7 @@ const digits = (v: string) => v.replace(/\D/g, "").length;
 
 function Page() {
   const { t } = useI18n();
+  const { isAuthenticated } = useAuth();
   const [kind, setKind] = useState<"procedure" | "amount">("procedure");
   const [serviceId, setServiceId] = useState("harmony");
   const [value, setValue] = useState(1500);
@@ -71,23 +72,18 @@ function Page() {
     setSaving(true);
     setError("");
     try {
-      const { error: saveError } = await supabase
-        .from("voucher_orders")
-        .insert({
-          voucher_kind: kind,
-          service_id: kind === "procedure" ? serviceId : null,
-          amount_czk: total,
-          customer_name: name,
-          phone,
-          email,
-          delivery_type: String(data.get("delivery") || "email"),
-        });
+      addVoucherOrder({
+        voucher_kind: kind,
+        service_id: kind === "procedure" ? serviceId : null,
+        amount_czk: total,
+        customer_name: name,
+        phone,
+        email,
+        delivery_type: String(data.get("delivery") || "email"),
+        status: "pending_payment",
+        payment_session_id: null,
+      });
       setSaving(false);
-      if (saveError) {
-        console.error("voucher insert failed", saveError);
-        setError(t.voucher.error);
-        return;
-      }
       setSent(true);
     } catch (err) {
       console.error(err);
@@ -95,6 +91,31 @@ function Page() {
       setError(t.reservation.errors.network);
     }
   };
+
+  if (!isAuthenticated) {
+    return (
+      <PageShell>
+        <CompactHero />
+        <main className="mx-auto max-w-4xl px-6 pb-24 pt-8 md:px-10">
+          <div className="surface-card p-8 md:p-10 text-center">
+            <span className="eyebrow">{t.voucher.eyebrow}</span>
+            <h1 className="section-heading mt-3">Account required</h1>
+            <p className="mt-4 mx-auto max-w-xl leading-8 text-muted-foreground">
+              Please register or log in before ordering a gift voucher. Voucher orders are only available for signed-in customers.
+            </p>
+            <div className="mt-8 flex flex-wrap justify-center gap-3">
+              <Button type="button" variant="outline" className="rounded-full" onClick={() => window.history.back()}>
+                Back
+              </Button>
+              <a href="/login" className="inline-flex h-10 items-center justify-center rounded-full bg-primary px-8 text-sm font-medium text-primary-foreground shadow">
+                Sign in / Register
+              </a>
+            </div>
+          </div>
+        </main>
+      </PageShell>
+    );
+  }
 
   return (
     <PageShell>

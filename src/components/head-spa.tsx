@@ -3,8 +3,19 @@ import { ArrowRight, Check, Globe, Menu, X } from "lucide-react";
 import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { supabase } from "@/integrations/supabase/client";
-import { BRAND, useI18n, type Lang } from "@/lib/i18n";
+import { addReservation, useAuth } from "@/lib/auth-context";
+import { BRAND, CONTACT_PLACEHOLDERS, useI18n, type Lang } from "@/lib/i18n";
+import logoSvg from "@/assets/logo.svg";
+import harmonyImage from "@/assets/service-harmony.jpg";
+import deepImage from "@/assets/service-deep.jpg";
+import royalImage from "@/assets/service-royal.jpg";
+import menImage from "@/assets/service-men.jpg";
+import kidImage from "@/assets/service-kid.jpg";
+import dryImage from "@/assets/service-dry.jpg";
+import peatWomanImage from "@/assets/service-peat-woman.jpg";
+import peatMenImage from "@/assets/service-peat-men.jpg";
+import pairImage from "@/assets/service-pair.jpg";
+import sensoryImage from "@/assets/service-sensory.jpg";
 
 export type Service = {
   id: string;
@@ -12,6 +23,7 @@ export type Service = {
   name: string;
   amount: number;
   duration: string;
+  image: string;
   details: { cs: string; en: string };
 };
 
@@ -22,6 +34,7 @@ export const services: Service[] = [
     name: "Harmony",
     amount: 1500,
     duration: "90 min",
+    image: harmonyImage,
     details: {
       cs: "Diagnostika vlasové pokožky, hloubkové čištění, profesionální péče, masáž hlavy, ramen a šíje, vodní terapie a jednoduchý styling.",
       en: "Scalp diagnostics, deep cleansing, professional care, head, shoulder and neck massage, water therapy and simple styling.",
@@ -33,6 +46,7 @@ export const services: Service[] = [
     name: "Deep Relax",
     amount: 2000,
     duration: "120 min",
+    image: deepImage,
     details: {
       cs: "Rozšířený rituál s péčí o obličej, aromaterapií, masáží a vodní terapií pro skutečně hluboké zklidnění.",
       en: "An extended ritual with facial care, aromatherapy, massage and water therapy for truly deep calm.",
@@ -44,6 +58,7 @@ export const services: Service[] = [
     name: "Royal Ritual",
     amount: 3500,
     duration: "180 min",
+    image: royalImage,
     details: {
       cs: "Tříhodinový celostní rituál spojující diagnostiku, péči o vlasy a pleť, masáž rukou, aromaterapii a styling.",
       en: "A three-hour holistic ritual combining diagnostics, hair and skin care, hand massage, aromatherapy and styling.",
@@ -55,6 +70,7 @@ export const services: Service[] = [
     name: "Men's Reset",
     amount: 1400,
     duration: "60 min",
+    image: menImage,
     details: {
       cs: "Cílená pánská péče s diagnostikou, čištěním, masáží šíje a ramen a vodní terapií.",
       en: "Focused care for men with diagnostics, cleansing, neck and shoulder massage and water therapy.",
@@ -66,6 +82,7 @@ export const services: Service[] = [
     name: "Kids Calm",
     amount: 1000,
     duration: "60 min",
+    image: kidImage,
     details: {
       cs: "Jemný a bezpečný rituál pro děti s šetrnou kosmetikou, vodní terapií a jednoduchým stylingem.",
       en: "A gentle, safe ritual for children with mild products, water therapy and simple styling.",
@@ -77,6 +94,7 @@ export const services: Service[] = [
     name: "Dry Touch",
     amount: 1250,
     duration: "60 min",
+    image: dryImage,
     details: {
       cs: "Suchý rituál doteku, jemného škrábání a masáže vlasové pokožky, obličeje, šíje a dekoltu.",
       en: "A dry ritual of touch, gentle scalp scratching and massage of the scalp, face, neck and décolleté.",
@@ -88,6 +106,7 @@ export const services: Service[] = [
     name: "Peat Therapy",
     amount: 3000,
     duration: "150 min",
+    image: peatWomanImage,
     details: {
       cs: "Specializovaná rašelinová péče pro problematickou pokožku, doplněná masáží, kosmetickým ošetřením a stylingem.",
       en: "Specialised peat care for problematic scalps, with massage, a facial treatment and styling.",
@@ -99,6 +118,7 @@ export const services: Service[] = [
     name: "Peat Therapy Men",
     amount: 2200,
     duration: "90 min",
+    image: peatMenImage,
     details: {
       cs: "Pánská rašelinová péče pro citlivou či problematickou vlasovou pokožku s masáží a vodní terapií.",
       en: "Peat care for men with a sensitive or problematic scalp, including massage and water therapy.",
@@ -110,6 +130,7 @@ export const services: Service[] = [
     name: "Ritual for Two",
     amount: 3400,
     duration: "90 / 120 min",
+    image: pairImage,
     details: {
       cs: "Společný čas s individuální péčí terapeutky pro každého hosta a plným soukromím během procedury.",
       en: "Shared time with a dedicated therapist for each guest and full privacy throughout the treatment.",
@@ -121,6 +142,7 @@ export const services: Service[] = [
     name: "Sensory Rest",
     amount: 1000,
     duration: "60 min",
+    image: sensoryImage,
     details: {
       cs: "Hodina vědomého doteku a jemných senzorických podnětů pro zklidnění nervového systému.",
       en: "An hour of mindful touch and gentle sensory input to calm the nervous system.",
@@ -142,22 +164,29 @@ export function useServicePrice() {
 function Brand({ inverted }: { inverted?: boolean } = {}) {
   return (
     <span className="flex items-center gap-3">
-      <span className="brand-mark" aria-hidden="true">
-        V
-      </span>
-      <span className="leading-tight">
-        <strong className="block font-serif text-lg font-normal">
-          {BRAND.name} {BRAND.suffix}
-        </strong>
-        <small
-          className={cn(
-            "text-[9px] uppercase tracking-[.28em]",
-            inverted ? "text-secondary-foreground/60" : "text-muted-foreground",
-          )}
-        >
-          {BRAND.city}
-        </small>
-      </span>
+      <img
+        src={logoSvg}
+        alt={`${BRAND.name} ${BRAND.suffix}`}
+        className={cn(
+          "h-10 w-auto object-contain",
+          inverted ? "brightness-0 invert" : "",
+        )}
+      />
+      {!inverted && (
+        <span className="leading-tight">
+          <strong className="block font-serif text-lg font-normal">
+            {BRAND.name} {BRAND.suffix}
+          </strong>
+          <small
+            className={cn(
+              "text-[9px] uppercase tracking-[.28em]",
+              inverted ? "text-secondary-foreground/60" : "text-muted-foreground",
+            )}
+          >
+            {BRAND.city}
+          </small>
+        </span>
+      )}
     </span>
   );
 }
@@ -261,7 +290,7 @@ export function Header({ onReserve }: { onReserve: () => void }) {
           </Button>
         </div>
         {open && (
-          <div className="absolute inset-x-4 top-[70px] surface-card p-5 shadow-xl lg:hidden">
+          <div className="absolute inset-x-4 top-[70px] rounded-[28px] border border-[rgba(34,31,29,0.08)] bg-[#f4ece3] p-5 shadow-[0_18px_42px_rgba(34,31,29,0.10)] lg:hidden">
             <nav className="flex flex-col">
               {links.map(([label, href]) =>
                 href.startsWith("/") && !href.startsWith("/#") ? (
@@ -269,7 +298,7 @@ export function Header({ onReserve }: { onReserve: () => void }) {
                     key={href}
                     to={href}
                     onClick={() => setOpen(false)}
-                    className="border-b border-border py-3.5 text-base"
+                    className="border-b border-[rgba(34,31,29,0.08)] py-3.5 text-base text-foreground"
                   >
                     {label}
                   </Link>
@@ -278,18 +307,18 @@ export function Header({ onReserve }: { onReserve: () => void }) {
                     key={href}
                     href={href}
                     onClick={() => setOpen(false)}
-                    className="border-b border-border py-3.5 text-base"
+                    className="border-b border-[rgba(34,31,29,0.08)] py-3.5 text-base text-foreground"
                   >
                     {label}
                   </a>
                 ),
               )}
               <div className="mt-3 flex items-center justify-between gap-3">
-                <LanguageSwitcher />
+                <LanguageSwitcher className="bg-white/80" />
                 <Link
                   to="/login"
                   onClick={() => setOpen(false)}
-                  className="rounded-full border border-border px-3 py-2 text-sm font-medium"
+                  className="rounded-full border border-border bg-white/80 px-3 py-2 text-sm font-medium text-foreground"
                 >
                   {t.nav.login}
                 </Link>
@@ -299,7 +328,7 @@ export function Header({ onReserve }: { onReserve: () => void }) {
                     onReserve();
                   }}
                   size="lg"
-                  className="flex-1 rounded-full"
+                  className="flex-1 rounded-full bg-[#6f5f52] text-[#f9f5f1]"
                 >
                   {t.common.reserveSlot}
                 </Button>
@@ -336,23 +365,18 @@ export function Footer() {
             {t.footer.visit}
           </p>
           <p className="text-sm leading-7">
-            Akademika Heyrovského 1178/6
+            {CONTACT_PLACEHOLDERS.address}
             <br />
             {t.footer.floor}
             <br />
-            500 02 Hradec Králové
+            {BRAND.city}
           </p>
           <p className="mt-3 text-sm text-secondary-foreground/70">
             {t.footer.hours}
           </p>
-          <a
-            href="https://mapy.com/s/majudenoha"
-            target="_blank"
-            rel="noreferrer"
-            className="mt-3 inline-block text-sm underline underline-offset-4"
-          >
+          <span className="mt-3 inline-block text-sm text-secondary-foreground/70">
             {t.footer.map}
-          </a>
+          </span>
         </div>
         <div>
           <p className="mb-4 text-xs uppercase tracking-[.2em] text-copper">
@@ -361,24 +385,24 @@ export function Footer() {
           <p className="text-sm leading-7">
             Lucie Malinová
             <br />
-            <a href="tel:+420774079993" className="hover:underline">
-              +420 774 079 993
-            </a>
+            <span className="hover:underline">
+              {CONTACT_PLACEHOLDERS.phone}
+            </span>
             <br />
-            <a href="mailto:lucka@headspahk.cz" className="hover:underline">
-              lucka@headspahk.cz
-            </a>
+            <span className="hover:underline">
+              {CONTACT_PLACEHOLDERS.email}
+            </span>
           </p>
           <p className="mt-4 text-sm leading-7">
             Jitka Slavíčková
             <br />
-            <a href="tel:+420776083283" className="hover:underline">
-              +420 776 083 283
-            </a>
+            <span className="hover:underline">
+              {CONTACT_PLACEHOLDERS.phone}
+            </span>
             <br />
-            <a href="mailto:jitka@headspahk.cz" className="hover:underline">
-              jitka@headspahk.cz
-            </a>
+            <span className="hover:underline">
+              {CONTACT_PLACEHOLDERS.email}
+            </span>
           </p>
         </div>
         <div>
@@ -427,12 +451,6 @@ export function PageShell({ children }: { children: ReactNode }) {
       {children}
       <Footer />
       {reserve && <ReservationModal onClose={() => setReserve(false)} />}
-      <Button
-        onClick={() => setReserve(true)}
-        className="fixed bottom-4 right-4 z-30 rounded-full shadow-xl lg:hidden"
-      >
-        {t.common.reserve} <ArrowRight />
-      </Button>
     </>
   );
 }
@@ -454,6 +472,7 @@ export function ReservationModal({
   initialService?: string;
 }) {
   const { t, lang } = useI18n();
+  const { isAuthenticated } = useAuth();
   const [step, setStep] = useState(initialService ? 2 : 1);
   const [serviceId, setServiceId] = useState(initialService);
   const [sent, setSent] = useState(false);
@@ -502,27 +521,22 @@ export function ReservationModal({
     setError("");
     const gift = data.get("gift") === "yes";
     try {
-      const { error: saveError } = await supabase
-        .from("reservation_requests")
-        .insert({
-          service_id: selected.id,
-          customer_name: name,
-          phone,
-          email,
-          preferred_time: time,
-          gift_voucher: gift,
-          gift_voucher_number: gift
-            ? String(data.get("voucher") || "").trim() || null
-            : null,
-          therapist: String(data.get("therapist") || "bez preference"),
-          amount_czk: selected.amount,
-        });
+      addReservation({
+        service_id: selected.id,
+        customer_name: name,
+        phone,
+        email,
+        preferred_time: time,
+        gift_voucher: gift,
+        gift_voucher_number: gift
+          ? String(data.get("voucher") || "").trim() || null
+          : null,
+        therapist: String(data.get("therapist") || "bez preference"),
+        amount_czk: selected.amount,
+        status: "pending_payment",
+        payment_session_id: null,
+      });
       setSaving(false);
-      if (saveError) {
-        console.error("reservation insert failed", saveError);
-        setError(t.reservation.errors.generic);
-        return;
-      }
       setSent(true);
     } catch (err) {
       console.error(err);
@@ -530,6 +544,39 @@ export function ReservationModal({
       setError(t.reservation.errors.network);
     }
   };
+
+  if (!isAuthenticated) {
+    return (
+      <div
+        className="fixed inset-0 z-50 grid place-items-center bg-secondary/85 p-3"
+        role="dialog"
+        aria-modal="true"
+        aria-label={t.reservation.title}
+        onMouseDown={(e) => e.target === e.currentTarget && onClose()}
+      >
+        <div className="w-full max-w-xl rounded-xl bg-background p-6 shadow-2xl md:p-10">
+          <span className="eyebrow">{t.reservation.eyebrow}</span>
+          <h2 className="mt-2 font-serif text-3xl md:text-4xl">
+            Account required
+          </h2>
+          <p className="mt-4 leading-7 text-muted-foreground">
+            Please register or log in before booking a ritual. Booking requests are only available for signed-in customers.
+          </p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Button type="button" variant="outline" className="rounded-full" onClick={onClose}>
+              {t.common.close}
+            </Button>
+            <Link
+              to="/login"
+              className={buttonVariants({ size: "lg", className: "rounded-full" })}
+            >
+              Sign in / Register
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -713,6 +760,9 @@ export function ReservationModal({
                     placeholder={t.reservation.placeholders.voucherNo}
                   />
                 </Field>
+                <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900 md:col-span-2">
+                  {t.reservation.paymentRequired}
+                </div>
                 <label className="flex items-start gap-3 text-xs leading-5 text-muted-foreground md:col-span-2">
                   <input type="checkbox" required className="mt-0.5 h-4 w-4" />{" "}
                   {t.reservation.consent}
@@ -739,13 +789,13 @@ export function ReservationModal({
                     className="flex-1 rounded-full"
                     disabled={saving}
                   >
-                    {saving ? t.common.saving : t.reservation.submit}
+                    {saving ? t.common.saving : t.reservation.payNow}
                   </Button>
                 </div>
                 <p className="text-[11px] text-muted-foreground md:col-span-2">
                   {lang === "cs"
-                    ? "Odesláním vzniká nezávazná žádost o termín."
-                    : "Submitting creates a non-binding appointment request."}
+                    ? "Rezervace je vázána na úhradu, aby se termín zajistil."
+                    : "Your booking is secured only after payment is completed."}
                 </p>
               </form>
             )}

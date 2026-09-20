@@ -32,7 +32,7 @@ function Page() {
         sections={[
           [
             "Správce osobních údajů",
-            "Společnými správci jsou Lucie Malinová, IČO 87626560, a Jitka Slavíčková, IČO 65723015, provozovna Akademika Heyrovského 1178/6, Hradec Králové. Kontaktní e-mail: lucka@headspahk.cz.",
+            "Společnými správci jsou Lucie Malinová a Jitka Slavíčková. Provozovna: ---. Kontaktní e-mail: ---.",
           ],
           [
             "Zpracovávané údaje",
@@ -48,7 +48,7 @@ function Page() {
           ],
           [
             "Vaše práva",
-            "Máte právo na přístup, opravu, výmaz, omezení zpracování, přenositelnost a vznesení námitky. Práva lze uplatnit e-mailem na lucka@headspahk.cz nebo písemně v provozovně.",
+            "Máte právo na přístup, opravu, výmaz, omezení zpracování, přenositelnost a vznesení námitky. Práva lze uplatnit prostřednictvím kontaktního formuláře nebo písemně v provozovně.",
           ],
           [
             "Cookies",

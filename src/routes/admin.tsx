@@ -4,14 +4,22 @@ import {
   ArrowLeft,
   Check,
   ClipboardList,
+  PencilLine,
+  Plus,
+  Save,
   Search,
   ShieldCheck,
+  Trash2,
   Users,
 } from "lucide-react";
-import { CompactHero, PageShell } from "@/components/head-spa";
+import {
+  CompactHero,
+  PageShell,
+  services,
+  type Service,
+} from "@/components/head-spa";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/lib/auth-context";
-import { supabase } from "@/integrations/supabase/client";
+import { readReservations, useAuth } from "@/lib/auth-context";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -33,11 +41,60 @@ type ReservationRow = {
   created_at: string;
 };
 
+type ProductRow = Service & {
+  details: { cs: string; en: string };
+};
+
+const PRODUCT_STORAGE_KEY = "head-spa-products-v1";
+
+const readStoredProducts = (): ProductRow[] => {
+  const fallback: ProductRow[] = services.map((service) => ({
+    ...service,
+    details: { ...service.details },
+  }));
+
+  if (typeof window === "undefined") return fallback;
+
+  try {
+    const raw = window.localStorage.getItem(PRODUCT_STORAGE_KEY);
+    if (!raw) return fallback;
+
+    const parsed = JSON.parse(raw) as ProductRow[];
+    if (!Array.isArray(parsed) || parsed.length === 0) return fallback;
+
+    return parsed.map((row) => ({
+      ...row,
+      category: row.category ?? "zeny",
+      amount: Number(row.amount ?? 0),
+      duration: row.duration ?? "60 min",
+      image: row.image ?? fallback[0]?.image ?? "",
+      details: {
+        cs: row.details?.cs ?? "",
+        en: row.details?.en ?? "",
+      },
+    }));
+  } catch {
+    return fallback;
+  }
+};
+
+const saveProductRows = (rows: ProductRow[]) => {
+  if (typeof window !== "undefined") {
+    window.localStorage.setItem(PRODUCT_STORAGE_KEY, JSON.stringify(rows));
+  }
+
+  services.splice(0, services.length, ...rows.map((row) => ({ ...row })));
+};
+
 function AdminPage() {
   const navigate = useNavigate();
   const { isAuthenticated, isAdmin, loading, signOut } = useAuth();
   const [rows, setRows] = useState<ReservationRow[]>([]);
   const [query, setQuery] = useState("");
+  const [activeTab, setActiveTab] = useState<"dashboard" | "products">(
+    "dashboard",
+  );
+  const [products, setProducts] = useState<ProductRow[]>(() => readStoredProducts());
 
   useEffect(() => {
     if (!loading && (!isAuthenticated || !isAdmin)) {
@@ -45,18 +102,14 @@ function AdminPage() {
       return;
     }
 
-    const load = async () => {
-      const { data, error } = await supabase
-        .from("reservation_requests")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (!error) {
-        setRows((data ?? []) as ReservationRow[]);
-      }
+    const load = () => {
+      const items = readReservations().sort(
+        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+      );
+      setRows(items as ReservationRow[]);
     };
 
-    void load();
+    load();
   }, [isAdmin, isAuthenticated, loading, navigate]);
 
   const filteredRows = useMemo(() => {
@@ -68,6 +121,76 @@ function AdminPage() {
         .includes(value),
     );
   }, [query, rows]);
+
+  const updateProduct = <K extends keyof ProductRow>(
+    id: string,
+    field: K,
+    value: ProductRow[K],
+  ) => {
+    setProducts((current) =>
+      current.map((product) =>
+        product.id === id ? { ...product, [field]: value } : product,
+      ),
+    );
+  };
+
+  const updateProductDetails = (
+    id: string,
+    locale: "cs" | "en",
+    value: string,
+  ) => {
+    setProducts((current) =>
+      current.map((product) =>
+        product.id === id
+          ? {
+              ...product,
+              details: {
+                ...product.details,
+                [locale]: value,
+              },
+            }
+          : product,
+      ),
+    );
+  };
+
+  const addProduct = () => {
+    const nextId = `custom-${Date.now()}`;
+    const nextProduct: ProductRow = {
+      id: nextId,
+      category: "zeny",
+      name: "New ritual",
+      amount: 1500,
+      duration: "60 min",
+      image: services[0]?.image ?? "",
+      details: {
+        cs: "Popis rituálu.",
+        en: "Ritual description.",
+      },
+    };
+
+    setProducts((current) => [...current, nextProduct]);
+  };
+
+  const deleteProduct = (id: string) => {
+    setProducts((current) => current.filter((product) => product.id !== id));
+  };
+
+  const saveProducts = () => {
+    const next = products.map((product) => ({
+      ...product,
+      amount: Number(product.amount) || 0,
+      name: product.name.trim() || "Untitled ritual",
+      duration: product.duration.trim() || "60 min",
+      details: {
+        cs: product.details.cs.trim() || "",
+        en: product.details.en.trim() || "",
+      },
+    }));
+
+    setProducts(next);
+    saveProductRows(next);
+  };
 
   const stats = useMemo(
     () => ({
@@ -93,7 +216,23 @@ function AdminPage() {
             <p className="eyebrow">Admin dashboard</p>
             <h1 className="section-heading">Rezervace a objednávky</h1>
           </div>
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3">
+            <div className="inline-flex rounded-full border border-border bg-background p-1">
+              <button
+                type="button"
+                onClick={() => setActiveTab("dashboard")}
+                className={`rounded-full px-4 py-2 text-sm font-medium ${activeTab === "dashboard" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}
+              >
+                Dashboard
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("products")}
+                className={`rounded-full px-4 py-2 text-sm font-medium ${activeTab === "products" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}
+              >
+                Products
+              </button>
+            </div>
             <Button
               variant="outline"
               className="rounded-full"
@@ -108,6 +247,8 @@ function AdminPage() {
           </div>
         </div>
 
+        {activeTab === "dashboard" ? (
+          <>
         <div className="grid gap-5 md:grid-cols-4">
           <div className="surface-card p-5">
             <ClipboardList className="mb-3 h-5 w-5 text-primary" />
@@ -229,6 +370,108 @@ function AdminPage() {
             <ArrowLeft /> Zpět na web
           </Link>
         </div>
+          </>
+        ) : (
+          <div className="space-y-6">
+            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <div>
+                <p className="eyebrow">Product management</p>
+                <h2 className="section-heading">Edit services and pricing</h2>
+              </div>
+              <div className="flex gap-3">
+                <Button type="button" variant="outline" className="rounded-full" onClick={addProduct}>
+                  <Plus /> Add ritual
+                </Button>
+                <Button type="button" className="rounded-full" onClick={saveProducts}>
+                  <Save /> Save changes
+                </Button>
+              </div>
+            </div>
+
+            <div className="grid gap-5">
+              {products.map((product) => (
+                <div key={product.id} className="surface-card p-5 md:p-6">
+                  <div className="mb-5 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                      <PencilLine className="h-4 w-4" />
+                      {product.name || "Untitled ritual"}
+                    </div>
+                    <Button type="button" variant="ghost" className="rounded-full p-2 text-destructive" onClick={() => deleteProduct(product.id)}>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+
+                  <div className="grid gap-5 md:grid-cols-2">
+                    <label className="block">
+                      <span className="mb-2 block text-xs font-semibold uppercase tracking-[.12em] text-muted-foreground">Name</span>
+                      <input
+                        value={product.name}
+                        onChange={(event) => updateProduct(product.id, "name", event.target.value)}
+                        className="field-control"
+                      />
+                    </label>
+
+                    <label className="block">
+                      <span className="mb-2 block text-xs font-semibold uppercase tracking-[.12em] text-muted-foreground">Category</span>
+                      <select
+                        value={product.category}
+                        onChange={(event) =>
+                          updateProduct(product.id, "category", event.target.value as ProductRow["category"])
+                        }
+                        className="field-control"
+                      >
+                        <option value="zeny">zeny</option>
+                        <option value="muzi">muzi</option>
+                        <option value="deti">deti</option>
+                        <option value="par">par</option>
+                      </select>
+                    </label>
+
+                    <label className="block">
+                      <span className="mb-2 block text-xs font-semibold uppercase tracking-[.12em] text-muted-foreground">Price</span>
+                      <input
+                        type="number"
+                        min={0}
+                        value={product.amount}
+                        onChange={(event) => updateProduct(product.id, "amount", Number(event.target.value))}
+                        className="field-control"
+                      />
+                    </label>
+
+                    <label className="block">
+                      <span className="mb-2 block text-xs font-semibold uppercase tracking-[.12em] text-muted-foreground">Duration</span>
+                      <input
+                        value={product.duration}
+                        onChange={(event) => updateProduct(product.id, "duration", event.target.value)}
+                        className="field-control"
+                      />
+                    </label>
+
+                    <label className="block md:col-span-2">
+                      <span className="mb-2 block text-xs font-semibold uppercase tracking-[.12em] text-muted-foreground">Description (CZ)</span>
+                      <textarea
+                        rows={3}
+                        value={product.details.cs}
+                        onChange={(event) => updateProductDetails(product.id, "cs", event.target.value)}
+                        className="field-control min-h-[88px]"
+                      />
+                    </label>
+
+                    <label className="block md:col-span-2">
+                      <span className="mb-2 block text-xs font-semibold uppercase tracking-[.12em] text-muted-foreground">Description (EN)</span>
+                      <textarea
+                        rows={3}
+                        value={product.details.en}
+                        onChange={(event) => updateProductDetails(product.id, "en", event.target.value)}
+                        className="field-control min-h-[88px]"
+                      />
+                    </label>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </main>
     </PageShell>
   );

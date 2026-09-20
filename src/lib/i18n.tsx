@@ -17,6 +17,12 @@ export const BRAND = {
   city: "Hradec Králové",
 };
 
+export const CONTACT_PLACEHOLDERS = {
+  phone: "---",
+  address: "---",
+  email: "---",
+};
+
 type Dict = typeof cs;
 
 const cs = {
@@ -40,9 +46,9 @@ const cs = {
     logout: "Odhlásit",
   },
   news: {
-    eyebrow: "Aktuality",
-    title: "Dárkový zážitek pro každý okamžik",
-    copy: "Vyberte si rituál podle potřeby vaší vlasové pokožky nebo darujte klid a péči formou dárkového poukazu. Každý zážitek připravujeme s ohledem na vaši pohodu a individuální potřeby.",
+    eyebrow: "Rezervace",
+    title: "Rezervujte si rituál a nechte se zklidnit",
+    copy: "Vyberte si termín online během několika minut. Vše je navrženo tak, aby bylo rezervování jednoduché, rychlé a přehledné pro každého klienta.",
   },
   reviews: {
     eyebrow: "Řekli o nás",
@@ -160,6 +166,29 @@ const cs = {
     reserve: "Rezervovat rituál",
     voucher: "Koupit poukaz",
   },
+  auth: {
+    titleLogin: "Přihlášení",
+    titleRegister: "Registrace",
+    subtitle:
+      "Pro rezervaci, správu termínů a přístup do zákaznického účtu se přihlaste s vaším e-mailem a heslem.",
+    signIn: "Přihlásit se",
+    signUp: "Registrovat",
+    signInButton: "Přihlásit se",
+    signUpButton: "Vytvořit účet",
+    submit: "Odesílám...",
+    firstName: "Jméno",
+    lastName: "Příjmení",
+    phone: "Telefon",
+    confirmPassword: "Potvrdit heslo",
+    customerAccount: "Zákaznický účet",
+    secureAccess: "Bezpečný přístup",
+    secureText:
+      "Váš účet vám umožní spravovat rezervace, sledovat platby a přístup k osobním údajům.",
+    adminAccess: "Administrace",
+    adminText:
+      "Pouze uživatel s rolí administrátora má přístup na panel /admin po přihlášení.",
+    backToHome: "Zpět na hlavní stránku",
+  },
   reservation: {
     eyebrow: "Rezervace",
     title: "Vyberte si čas pro sebe",
@@ -257,7 +286,7 @@ const cs = {
       },
       {
         title: "Jak nás najdete",
-        copy: "Akademika Heyrovského 1178/6, Hradec Králové. Vyjeďte výtahem do 3. patra a dejte se vlevo. Parkovat můžete v okolních ulicích.",
+        copy: `Adresa: ${CONTACT_PLACEHOLDERS.address}. Pro přesné návštěvní instrukce nás kontaktujte před příjezdem.`,
       },
       {
         title: "Důležité informace",
@@ -304,9 +333,9 @@ const en: Dict = {
     logout: "Log out",
   },
   news: {
-    eyebrow: "News",
-    title: "A gift experience for any moment",
-    copy: "Choose a ritual based on your scalp and hair needs, or give the gift of calm and care with a personalised voucher. Every experience is tailored to provide comfort, restoration and a sense of ease.",
+    eyebrow: "Booking",
+    title: "Book your ritual and enjoy a calmer moment",
+    copy: "Reserve your appointment online in minutes. The process is simple, fast, and designed to make booking feel effortless for every guest.",
   },
   reviews: {
     eyebrow: "Kind words",
@@ -353,7 +382,7 @@ const en: Dict = {
   hero: {
     eyebrow: "Head Spa · Hradec Králové",
     title: "Care that starts at the roots.",
-    copy: "We combine scalp diagnostics, clean rituals and mindful touch — for healthier hair and a mind that finally switches off.",
+    copy: "We combine scalp diagnostics, mindful rituals and gentle touch to support healthier hair and a calmer mind.",
     cta: "Choose a ritual",
     secondary: "View services",
     gift: "Give an experience",
@@ -361,7 +390,7 @@ const en: Dict = {
   approach: {
     eyebrow: "Our approach",
     title: "More than relaxation.",
-    copy: "Every ritual is built around what your scalp needs. Expertise and calm are not opposites here — they belong together.",
+    copy: "Every ritual is designed around your scalp and your needs. Expertise and calm are not opposites here — they belong together.",
     steps: [
       {
         title: "We observe",
@@ -377,15 +406,15 @@ const en: Dict = {
       },
       {
         title: "We finish",
-        copy: "We dry your hair gently and suggest a simple home routine.",
+        copy: "We dry your hair gently and suggest a simple at-home routine.",
       },
     ],
   },
   quote: {
     eyebrow: "Your time",
-    title: "Slowing down isn't a luxury. It's care.",
+    title: "Slowing down is not a luxury. It is care.",
     copy: "In a quiet, unhurried space we focus on one person only — you. From the first touch to the last drop of water.",
-    text: "“I left rested and feeling light.”",
+    text: "“I left feeling rested and lighter.”",
     author: "Lucie Čajková",
   },
   servicesSection: {
@@ -424,16 +453,39 @@ const en: Dict = {
     reserve: "Book a ritual",
     voucher: "Buy a voucher",
   },
+  auth: {
+    titleLogin: "Log in",
+    titleRegister: "Register",
+    subtitle:
+      "Log in with your email and password to book, manage your appointments, and access your customer account.",
+    signIn: "Log in",
+    signUp: "Register",
+    signInButton: "Log in",
+    signUpButton: "Create account",
+    submit: "Signing in...",
+    firstName: "First name",
+    lastName: "Last name",
+    phone: "Phone",
+    confirmPassword: "Confirm password",
+    customerAccount: "Customer account",
+    secureAccess: "Secure access",
+    secureText:
+      "Your account lets you manage reservations, monitor payments and access your personal details.",
+    adminAccess: "Administration",
+    adminText:
+      "Only a user with the administrator role can access the /admin panel after signing in.",
+    backToHome: "Back to homepage",
+  },
   reservation: {
     eyebrow: "Booking",
-    title: "Choose time for yourself",
+    title: "Choose a time for yourself",
     stepService: "Ritual",
     stepDetails: "Contact details",
     submit: "Send booking request",
     reserveAnd: "Book this ritual",
-    success: "Your request has been submitted successfully.",
+    success: "Your reservation is pending payment.",
     successCopy:
-      "We'll get back to you to confirm the date and time. Online payment will be available once payments are activated.",
+      "The appointment request has been created. Please complete the payment to secure your time slot and receive confirmation.",
     fields: {
       name: "Full name",
       phone: "Phone",
@@ -460,6 +512,8 @@ const en: Dict = {
     no: "No",
     consent:
       "I agree to the terms and conditions and to the processing of my personal data.",
+    paymentRequired: "Payment is required to confirm the booking and secure your time slot.",
+    payNow: "Pay now",
     errors: {
       name: "Please enter your full name (at least 2 characters).",
       phone: "Please enter a valid phone number (at least 6 digits).",
@@ -471,34 +525,34 @@ const en: Dict = {
     },
   },
   voucher: {
-    eyebrow: "A gift that won't sit in a drawer",
+    eyebrow: "A thoughtful gift",
     title: "Give the gift of time.",
-    copy: "We send digital vouchers by email and prepare printed ones for pickup in the salon. Validity and conditions are always stated on the voucher.",
+    copy: "We send digital vouchers by email and prepare printed vouchers for pickup in the salon. Validity and terms are always stated directly on the voucher.",
     byRitual: "A specific ritual",
     byAmount: "Custom value",
     chooseRitual: "Choose a ritual",
     amount: "Voucher value",
     delivery: "Delivery",
-    deliveryEmail: "Digitally by email",
+    deliveryEmail: "Digital by email",
     deliveryPickup: "Pickup in the salon",
     submit: "Order voucher",
     success: "Your order has been submitted successfully.",
     successCopy:
-      "We'll contact you with confirmation and next steps. Online payment will be available once payments are activated.",
+      "We'll contact you with confirmation and next steps. Payment is required to confirm and secure the voucher order.",
     error:
       "We couldn't send your order. Please check your details and try again.",
     terms: [
       {
         title: "Validity",
-        copy: "Book well in advance — voucher validity cannot be extended.",
+        copy: "Please book in advance — voucher validity cannot be extended.",
       },
       {
         title: "Delivery",
-        copy: "Digital vouchers arrive by email, printed ones are collected in the salon.",
+        copy: "Digital vouchers are sent by email, while printed vouchers can be collected in the salon.",
       },
       {
         title: "Redemption",
-        copy: "Vouchers cannot be exchanged for cash and unused value is not refunded.",
+        copy: "Vouchers cannot be exchanged for cash, and any unused value is non-refundable.",
       },
     ],
   },
@@ -508,27 +562,27 @@ const en: Dict = {
     intro1:
       "Wash your hair ideally 24–48 hours before the treatment. We also recommend avoiding caffeine so you can fully relax.",
     intro2:
-      "One week before your appointment we'll email you a short questionnaire so we can tailor the care precisely to you.",
+      "One week before your appointment, we'll send you a short questionnaire so we can tailor the treatment precisely to you.",
     blocks: [
       {
         title: "Payment",
-        copy: "Online payment will be available once payments are activated. Until then we confirm the payment method together with your appointment.",
+        copy: "Payment is required to confirm your booking and secure the time slot. Once payments are activated, the confirmation will be sent automatically.",
       },
       {
         title: "Arrival",
-        copy: "Please arrive 5 minutes before your appointment. If you come earlier, take a seat in our waiting area.",
+        copy: "Please arrive 5 minutes before your appointment. If you come earlier, feel free to take a seat in our waiting area.",
       },
       {
         title: "Finding us",
-        copy: "Akademika Heyrovského 1178/6, Hradec Králové. Take the lift to the 3rd floor and turn left. Street parking is available nearby.",
+        copy: `Address: ${CONTACT_PLACEHOLDERS.address}. Please get in touch before your visit for directions and access details.`,
       },
       {
         title: "Important information",
-        copy: "Appointments can be cancelled free of charge up to 48 hours in advance. Later cancellations are charged at 50 %, no-shows at 100 % of the price.",
+        copy: "Appointments can be cancelled free of charge up to 48 hours in advance. Later cancellations are charged at 50%, and no-shows are charged at 100% of the price.",
       },
       {
         title: "Gift vouchers",
-        copy: "Please bring your voucher with you. Validity cannot be extended, so book at least 3 months before it expires.",
+        copy: "Please bring your voucher with you. Validity cannot be extended, so we recommend booking at least 3 months before it expires.",
       },
     ],
   },

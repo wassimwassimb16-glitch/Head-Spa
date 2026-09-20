@@ -32,7 +32,7 @@ function Page() {
         sections={[
           [
             "Poskytovatel",
-            "Služby poskytují Lucie Malinová, IČO 87626560, a Jitka Slavíčková, IČO 65723015, v provozovně Akademika Heyrovského 1178/6, Hradec Králové.",
+            "Služby poskytují Lucie Malinová a Jitka Slavíčková v provozovně ---.",
           ],
           [
             "Uzavření smlouvy a rezervace",
