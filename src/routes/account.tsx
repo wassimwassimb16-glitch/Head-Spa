@@ -10,6 +10,7 @@ import {
 import { CompactHero, PageShell } from "@/components/head-spa";
 import { Button } from "@/components/ui/button";
 import { readReservations, useAuth } from "@/lib/auth-context";
+import { confirmCheckoutSession } from "@/lib/payment.functions";
 
 export const Route = createFileRoute("/account")({
   head: () => ({
@@ -43,24 +44,25 @@ function AccountPage() {
 
     if (!user?.email) return;
 
-    const load = () => {
+    const load = async () => {
       try {
-        const items = readReservations()
-          .filter((entry) => entry.email.toLowerCase() === user.email.toLowerCase())
-          .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        const params = new URLSearchParams(window.location.search);
+        const sessionId = params.get("session_id");
+        if (params.get("payment") === "success" && sessionId) {
+          await confirmCheckoutSession({ data: { sessionId } });
+          window.history.replaceState({}, "", window.location.pathname);
+        }
+        const items = (await readReservations()).filter((entry) => entry.email.toLowerCase() === user.email.toLowerCase()).sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
         setReservations(items as ReservationRow[]);
-      } catch {
-        setFetchError("Nepodařilo se načíst vaše rezervace.");
-      }
+      } catch { setFetchError("Nepodařilo se načíst vaše rezervace."); }
     };
-
-    load();
+    void load();
   }, [isAuthenticated, loading, navigate, user]);
 
   const upcoming = useMemo(
     () =>
       reservations.filter(
-        (item) => item.status !== "completed`" && item.status !== "cancelled",
+        (item) => item.status !== "completed" && item.status !== "cancelled",
       ),
     [reservations],
   );
