@@ -52,9 +52,19 @@ function AccountPage() {
           await confirmCheckoutSession({ data: { sessionId } });
           window.history.replaceState({}, "", window.location.pathname);
         }
-        const items = (await readReservations()).filter((entry) => entry.email.toLowerCase() === user.email.toLowerCase()).sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        const items = (await readReservations())
+          .filter(
+            (entry) => entry.email.toLowerCase() === user.email.toLowerCase(),
+          )
+          .sort(
+            (a, b) =>
+              new Date(b.created_at).getTime() -
+              new Date(a.created_at).getTime(),
+          );
         setReservations(items as ReservationRow[]);
-      } catch { setFetchError("Nepodařilo se načíst vaše rezervace."); }
+      } catch {
+        setFetchError("Nepodařilo se načíst vaše rezervace.");
+      }
     };
     void load();
   }, [isAuthenticated, loading, navigate, user]);
