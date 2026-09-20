@@ -225,6 +225,8 @@ const cs = {
     no: "Ne",
     consent:
       "Souhlasím s obchodními podmínkami a se zpracováním osobních údajů.",
+    paymentRequired: "Platba kartou je nutná pro potvrzení rezervace a zajištění termínu.",
+    payNow: "Pokračovat k platbě",
     errors: {
       name: "Zadejte prosím celé jméno (alespoň 2 znaky).",
       phone: "Zadejte prosím platné telefonní číslo (alespoň 6 číslic).",
@@ -278,7 +280,7 @@ const cs = {
     blocks: [
       {
         title: "Platba",
-        copy: "Online platba bude dostupná po aktivaci plateb. Do té doby potvrdíme způsob úhrady společně s termínem.",
+        copy: "Platba kartou probíhá bezpečně přes Stripe. Rezervace je potvrzena po úspěšné úhradě.",
       },
       {
         title: "Příchod",
@@ -566,7 +568,7 @@ const en: Dict = {
     blocks: [
       {
         title: "Payment",
-        copy: "Payment is required to confirm your booking and secure the time slot. Once payments are activated, the confirmation will be sent automatically.",
+        copy: "Payment is processed securely through Stripe. Your booking is confirmed after successful payment.",
       },
       {
         title: "Arrival",
