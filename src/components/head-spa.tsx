@@ -181,7 +181,9 @@ function Brand({ inverted }: { inverted?: boolean } = {}) {
           <small
             className={cn(
               "text-[9px] uppercase tracking-[.28em]",
-              inverted ? "text-secondary-foreground/60" : "text-muted-foreground",
+              inverted
+                ? "text-secondary-foreground/60"
+                : "text-muted-foreground",
             )}
           >
             {BRAND.city}
@@ -522,13 +524,17 @@ export function ReservationModal({
         email: user?.email ?? email,
         preferred_time: time,
         gift_voucher: gift,
-        gift_voucher_number: gift ? String(data.get("voucher") || "").trim() || null : null,
+        gift_voucher_number: gift
+          ? String(data.get("voucher") || "").trim() || null
+          : null,
         therapist: String(data.get("therapist") || "bez preference"),
         amount_czk: selected.amount,
         status: "pending_payment",
         payment_session_id: null,
       });
-      const checkout = await createCheckoutSession({ data: { orderId: reservation.id, orderType: "reservation" } });
+      const checkout = await createCheckoutSession({
+        data: { orderId: reservation.id, orderType: "reservation" },
+      });
       setSaving(false);
       if (!checkout.url) throw new Error("Stripe checkout URL is missing.");
       window.location.assign(checkout.url);
@@ -554,15 +560,24 @@ export function ReservationModal({
             Account required
           </h2>
           <p className="mt-4 leading-7 text-muted-foreground">
-            Please register or log in before booking a ritual. Booking requests are only available for signed-in customers.
+            Please register or log in before booking a ritual. Booking requests
+            are only available for signed-in customers.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Button type="button" variant="outline" className="rounded-full" onClick={onClose}>
+            <Button
+              type="button"
+              variant="outline"
+              className="rounded-full"
+              onClick={onClose}
+            >
               {t.common.close}
             </Button>
             <Link
               to="/login"
-              className={buttonVariants({ size: "lg", className: "rounded-full" })}
+              className={buttonVariants({
+                size: "lg",
+                className: "rounded-full",
+              })}
             >
               Sign in / Register
             </Link>
